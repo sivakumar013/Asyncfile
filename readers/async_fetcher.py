@@ -54,7 +54,30 @@ async def fetch_all():
         asyncio.to_thread(read_excel, "../data/excel/employees.xlsx"),
     ]
 
-    results = await asyncio.gather(*tasks)
+    results = await asyncio.gather(*tasks, return_exceptions=True)
+
+    names = [
+        "employees",
+        "products",
+        "sales_csv",
+        "customers_csv",
+        "report_doc",
+        "meeting_doc",
+        "invoice_pdf",
+        "manual_pdf",
+        "example_page",
+        "python_page",
+        "employees_json",
+        "html_page",
+        "css_file",
+        "notes_txt",
+        "employees_excel",
+    ]
+
+    for i, result in enumerate(results):
+        if isinstance(result, Exception):
+            print(f"Error loading {names[i]}: {result}")
+            results[i] = None
 
     return {
 
@@ -87,29 +110,33 @@ async def fetch_all():
 
 async def main():
 
-    start = time.perf_counter()
+    try:
+        start = time.perf_counter()
 
-    all_data = await fetch_all()
+        all_data = await fetch_all()
 
-    end = time.perf_counter()
+        end = time.perf_counter()
 
-    print("\n" + "=" * 70)
-    print("ALL DATA LOADED")
-    print("=" * 70)
+        print("\n" + "=" * 70)
+        print("ALL DATA LOADED")
+        print("=" * 70)
 
-    for key, value in all_data.items():
+        for key, value in all_data.items():
 
-        print(f"\n===== {key.upper()} =====")
+            print(f"\n===== {key.upper()} =====")
 
-        if isinstance(value, list):
-            for row in value:
-                print(row)
-        else:
-            print(value)
+            if isinstance(value, list):
+                for row in value:
+                    print(row)
+            else:
+                print(value)
 
-    print("\n" + "=" * 70)
-    print(f"Concurrent Fetch Time: {end - start:.4f} seconds")
-    print("=" * 70)
+        print("\n" + "=" * 70)
+        print(f"Concurrent Fetch Time: {end - start:.4f} seconds")
+        print("=" * 70)
+
+    except Exception as e:
+        print(f"Unexpected Error: {e}")
 
 
 if __name__ == "__main__":

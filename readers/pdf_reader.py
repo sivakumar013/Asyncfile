@@ -1,16 +1,34 @@
 from PyPDF2 import PdfReader
 import time
 
+
 def read_pdf(file_path):
-    time.sleep(1)
-    reader = PdfReader(file_path)
+    try:
+        time.sleep(1)
 
-    text = []
+        reader = PdfReader(file_path)
 
-    for page in reader.pages:
-        text.append(page.extract_text())
+        text = []
 
-    return "\n".join(text)
+        for page in reader.pages:
+            page_text = page.extract_text()
+
+            if page_text:
+                text.append(page_text)
+
+        return "\n".join(text)
+
+    except FileNotFoundError:
+        print(f"Error: File not found - {file_path}")
+        return ""
+
+    except PermissionError:
+        print(f"Error: Permission denied - {file_path}")
+        return ""
+
+    except Exception as e:
+        print(f"Unexpected error reading PDF file: {e}")
+        return ""
 
 
 if __name__ == "__main__":
@@ -18,7 +36,13 @@ if __name__ == "__main__":
     manual = read_pdf("data/pdf/manual.pdf")
 
     print("===== INVOICE =====")
-    print(invoice)
+    if invoice:
+        print(invoice)
+    else:
+        print("No invoice data available.")
 
-    print("===== MANUAL =====")
-    print(manual)
+    print("\n===== MANUAL =====")
+    if manual:
+        print(manual)
+    else:
+        print("No manual data available.")

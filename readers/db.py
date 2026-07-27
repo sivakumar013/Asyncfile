@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 def get_connection():
     return psycopg2.connect(
         host=os.getenv("DB_HOST"),
@@ -15,38 +16,81 @@ def get_connection():
 
 
 def employees():
-    time.sleep(1)
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM employees")
-    data = cursor.fetchall()
+    conn = None
+    cursor = None
 
-    cursor.close()
-    conn.close()
+    try:
+        time.sleep(1)
 
-    return data
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT * FROM employees")
+        data = cursor.fetchall()
+
+        return data
+
+    except psycopg2.Error as e:
+        print(f"Database Error (employees): {e}")
+        return []
+
+    except Exception as e:
+        print(f"Unexpected Error (employees): {e}")
+        return []
+
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
 
 def products():
-    time.sleep(1)
-    conn = get_connection()
-    cursor = conn.cursor()
+    conn = None
+    cursor = None
 
-    cursor.execute("SELECT * FROM products")
-    data = cursor.fetchall()
+    try:
+        time.sleep(1)
 
-    cursor.close()
-    conn.close()
+        conn = get_connection()
+        cursor = conn.cursor()
 
-    return data
+        cursor.execute("SELECT * FROM products")
+        data = cursor.fetchall()
+
+        return data
+
+    except psycopg2.Error as e:
+        print(f"Database Error (products): {e}")
+        return []
+
+    except Exception as e:
+        print(f"Unexpected Error (products): {e}")
+        return []
+
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
 
 if __name__ == "__main__":
 
-    print("Employees")
-    for row in employees():
-        print(row)
+    print("===== EMPLOYEES =====")
+    employee_data = employees()
 
-    print("Products")
-    for row in products():
-        print(row)
+    if employee_data:
+        for row in employee_data:
+            print(row)
+    else:
+        print("No employee data available.")
+
+    print("\n===== PRODUCTS =====")
+    product_data = products()
+
+    if product_data:
+        for row in product_data:
+            print(row)
+    else:
+        print("No product data available.")

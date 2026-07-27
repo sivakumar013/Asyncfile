@@ -2,16 +2,33 @@ import time
 
 
 def read_css(file_path):
-    time.sleep(1)
+    try:
+        time.sleep(1)
 
-    with open(file_path, "r", encoding="utf-8") as file:
-        css = file.read()
+        with open(file_path, "r", encoding="utf-8") as file:
+            css = file.read()
 
-    return css
+        return css
+
+    except FileNotFoundError:
+        print(f"Error: File not found - {file_path}")
+        return ""
+
+    except PermissionError:
+        print(f"Error: Permission denied - {file_path}")
+        return ""
+
+    except Exception as e:
+        print(f"Unexpected error reading CSS file: {e}")
+        return ""
 
 
 if __name__ == "__main__":
     style = read_css("../data/css/style.css")
 
     print("===== CSS FILE =====")
-    print(style)
+
+    if style:
+        print(style)
+    else:
+        print("No CSS content available.")
